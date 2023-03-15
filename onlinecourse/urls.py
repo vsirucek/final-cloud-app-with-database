@@ -21,4 +21,6 @@ urlpatterns = [
 
     # <HINT> Create a route for show_exam_result view
 
+    # test change to learn git
+
  ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
