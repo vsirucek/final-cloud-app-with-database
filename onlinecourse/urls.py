@@ -25,5 +25,5 @@ urlpatterns = [
     # ex: /enroll/5/
     path('<int:submission_id>/show_exam_result/', views.show_exam_result, 
     name='show_exam_result'),
-
+    #test change to test github
  ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
