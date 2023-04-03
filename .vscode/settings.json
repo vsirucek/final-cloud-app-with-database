@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "exampleDbConn",
+            "database": "\\\\wsl.localhost\\Ubuntu\\home\\vsirucek\\final-cloud-app-with-database\\example.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

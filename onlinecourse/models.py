@@ -138,5 +138,5 @@ class Submission(models.Model):
 #    Other fields and methods you would like to design
 
 class SubmittedChoice(models.Model):
-    choice = models.ForeignKey(Choice)
-    submission = models.ForeignKey(Submission)
+    choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    submission = models.ForeignKey(Submission, on_delete=models.CASCADE)
