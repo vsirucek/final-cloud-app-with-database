@@ -62,15 +62,20 @@
                         <button data-toggle="collapse" data-target="#exam" class="btn btn-info mx-auto btn-block">Start Exam</button>
                     </h5></div>
                 <div class="card-body"> 
+                <!-- <HINT> If user is authenticated, show course exam with a list of question -->
+                    {% if user.is_authenticated %}
                     <div id="exam" class="collapse">
-                        Click to expand elements within the collapse div
-                    </div></div>
+                        <!-- <HINT> Each exam will have many  -->  
+                         {% for question in course} 
+                    </div>
+                    {% else %}
+                    <div id="exam" class="collapse">
+                        Please log in to see the exam
+                    {% endif %}
+                </div>
             </div>
 
 
-            <!-- <HINT> If user is authenticated, show course exam with a list of question -->
-
-            <!-- <HINT> Each example will have many questions -->
 
             <!-- <HINT> Each question will have many choices -->
 
