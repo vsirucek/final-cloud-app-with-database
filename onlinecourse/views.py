@@ -117,18 +117,18 @@ def submit(request, course_id):
     enrollment = Enrollment.objects.get(user=user, course=course)
     submission = Submission.objects.create(enrollment=enrollment)
     submitted_answers = extract_answers(request=request)
-    for choice in submitted_answers:
+    for choice_id in submitted_answers:
+        choice = get_object_or_404(Choice, pk=choice_id)
         SubmittedChoice.objects.create(choice=choice,submission=submission)
-    return redirect('onlinecourse:show_exam_result', submissionId=submission.id )
-    
-"""
-Collect the selected choices from HTTP request object (HINT: you could use request.POST 
-to get the payload dictionary, and
-get the choice id from the dictionary values, an example code snippet is also provided)
-Add each selected choice object to the submission object
-Redirect to a show_exam_result view with the submission id to show the exam result
-Configure urls.py to route the new submit view such as path('<int:course_id>/submit/', ...),
- """
+    return redirect('onlinecourse:show_exam_result', course_id=course.id, submission_id=submission.id)
+  
+#Collect the selected choices from HTTP request object (HINT: you could use request.POST 
+#to get the payload dictionary, and
+#get the choice id from the dictionary values, an example code snippet is also provided)
+#Add each selected choice object to the submission object
+#Redirect to a show_exam_result view with the submission id to show the exam result
+#Configure urls.py to route the new submit view such as path('<int:course_id>/submit/', ...),
+#
 
 # <HINT> A example method to collect the selected choices from the exam form from the request 
 # object
@@ -143,8 +143,7 @@ def extract_answers(request):
 
 
 # <HINT> Create an exam result view to check if learner passed exam and show their question 
-# results and 
-# result for each question,
+# results and  result for each question,
 # you may implement it based on the following logic:
         # Get course and submission based on their ids
         # Get the selected choice ids from the submission record
@@ -162,10 +161,18 @@ def extract_answers(request):
 #Configure urls.py to route the new show_exam_result view such as 
 # path('course/<int:course_id>/submission/<int:submission_id>/result/', ...),
 
-def show_exam_result(submission_id):
+def show_exam_result(request, course_id, submission_id):
+    context = {}
     submission = get_object_or_404(Submission, pk=submission_id)
-    #for submittedChoice in submission.choices:
-    
-
-
-
+    course = get_object_or_404( Course, pk=course_id)
+    selectedChoices = SubmittedChoice.objects.filter(submission=submission)
+    grade = 0
+    courseQuestionSet = Question.objects.filter(course=course)
+    for question in courseQuestionSet:
+        if question.is_get_score(selectedChoices):
+            grade = grade + question.grade
+    #if grade > 100      
+    context['course'] = course
+    context['selected_ids'] = selectedChoices
+    context['grade'] = grade
+    return render( request, 'onlinecourse/exam_result_bootstrap.html', context )
