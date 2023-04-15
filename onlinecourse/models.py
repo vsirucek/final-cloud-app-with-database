@@ -109,10 +109,10 @@ class Question(models.Model):
     grade = models.IntegerField(default=0)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     # <HINT> A sample model method to calculate if learner get the score of the question
-    def is_get_score(self, selected_ids):
-        all_answers = self.choice_set.filter(is_correct=True).count()
-        selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
-        if all_answers == selected_correct:
+    def is_get_score(self, selQuestionChoices):
+        countAllCorrQuestionChoices = self.choice_set.filter(is_correct=True).count()
+        countSelCorrQuestionChoices = selQuestionChoices.filter(is_correct=True).count()
+        if countAllCorrQuestionChoices == countSelCorrQuestionChoices:
             return True
         else:
             return False
@@ -136,7 +136,3 @@ class Submission(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
 #    Other fields and methods you would like to design
-
-class SubmittedChoice(models.Model):
-    choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
-    submission = models.ForeignKey(Submission, on_delete=models.CASCADE)
