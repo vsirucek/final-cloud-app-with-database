@@ -62,6 +62,7 @@ class Course(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Enrollment')
     total_enrollment = models.IntegerField(default=0)
     is_enrolled = False
+    gradeLimit = models.IntegerField(default= 90)
 
     def __str__(self):
         return "Name: " + self.name + "," + \
@@ -112,7 +113,9 @@ class Question(models.Model):
     def is_get_score(self, selQuestionChoices):
         countAllCorrQuestionChoices = self.choice_set.filter(is_correct=True).count()
         countSelCorrQuestionChoices = selQuestionChoices.filter(is_correct=True).count()
-        if countAllCorrQuestionChoices == countSelCorrQuestionChoices:
+        countSelNotCorrQuestionChoices = selQuestionChoices.filter(is_correct=False).count()
+        if (countAllCorrQuestionChoices == countSelCorrQuestionChoices and
+            countSelNotCorrQuestionChoices == 0):
             return True
         else:
             return False
@@ -125,7 +128,7 @@ class Question(models.Model):
     # Other fields and methods you would like to design
 class Choice(models.Model):
     question = models.ForeignKey(Question,on_delete=models.CASCADE)
-    content = models.TextField()
+    content =  models.TextField()
     is_correct = models.BooleanField(default=False)
 
 # <HINT> The submission model

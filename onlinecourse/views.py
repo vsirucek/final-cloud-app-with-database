@@ -116,9 +116,11 @@ def submit(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     enrollment = Enrollment.objects.get(user=user, course=course)
     submission = Submission.objects.create(enrollment=enrollment)
+    submission.save()   
     submitted_answers = extract_answers(request=request)
     for choice_id in submitted_answers:
-        submission.choices.add(id=choice_id)
+        choice = get_object_or_404(Choice, pk=choice_id)
+        submission.choices.add(choice)
     return redirect('onlinecourse:show_exam_result', course_id=course.id, submission_id=submission.id)
   
 #Collect the selected choices from HTTP request object (HINT: you could use request.POST 
@@ -164,13 +166,18 @@ def show_exam_result(request, course_id, submission_id):
     context = {}
     submission = get_object_or_404(Submission, pk=submission_id)
     course = get_object_or_404( Course, pk=course_id)
-    grade = 0
+    selGrade = 0
+    allGrade = 0
     courseQuestions = Question.objects.filter(course=course)
     for question in courseQuestions:
-        selQuestionChoices = Choice.objects.filter(submission=submission, question=question)
+        #selQuestionChoices = Choice.objects.filter(submission=submission, question=question)
+        selQuestionChoices = Choice.objects.filter(submission=submission, question=question)       
         if question.is_get_score(selQuestionChoices):
-            grade = grade + question.grade    
+            selGrade = selGrade + question.grade  
+        allGrade = allGrade + question.grade  
+    gradePercent = round( 100.0 * selGrade / allGrade)
     context['course'] = course
-    context['choicesInSubmission'] = Choice.objects.filter(submission=submission)
-    context['grade'] = grade
+    context['submission'] = submission
+    context['grade'] = gradePercent
+    context['gradeLimit'] = course.gradeLimit
     return render( request, 'onlinecourse/exam_result_bootstrap.html', context )
